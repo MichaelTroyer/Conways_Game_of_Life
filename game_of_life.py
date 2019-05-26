@@ -17,6 +17,7 @@ from numpy.random import choice
 
 ALIVE = '*'
 EMPTY = '-'
+
 TICK = object()
 
 Query = namedtuple('Query', ('y', 'x'))
@@ -39,7 +40,6 @@ class Grid(object):
     
     def __repr__(self):
         return 'Grid({}, {})'.format(self.height, self.width)
-    
     
     def populate(self, n_alive=10):
         xs = choice(range(self.width), n_alive)
@@ -71,7 +71,7 @@ def game_logic(state, neighbors):
 
 def count_neighbors(y, x):
     # Count_neighbors is initialized with a x,y location
-    # calls to send expect a state and return the next query
+    # calls to send() expect a state and return the next query
     n_ = yield Query(y + 1, x + 0)
     ne = yield Query(y + 1, x + 1)
     e_ = yield Query(y + 0, x + 1)
@@ -80,7 +80,7 @@ def count_neighbors(y, x):
     sw = yield Query(y - 1, x - 1)
     w_ = yield Query(y + 0, x - 1)
     nw = yield Query(y + 1, x - 1)
-    # send() calls after this raise StopIteration and return
+    # send() calls after this raise StopIteration and return value
     neighbors = [n_, ne, e_, se, s_, sw, w_, nw]
     return sum([1 for state in neighbors if state == ALIVE])
 
@@ -102,14 +102,13 @@ def simulator(height, width):
         yield TICK
 
 
-def live_a_generation(grid, sim):
-    # The next grid
-    progeny = Grid(grid.height, grid.width)
-    # Progress to first yield which will yield Query(0, 0)
+def next_generation(grid, sim):
+    # Initialize the next (empty) grid
+    next_grid = Grid(grid.height, grid.width)
+    # Progress to first 'yield' which will yield Query(0, 0)
     item = next(sim)
     # TICK is a sentinal value to indicate end of simulation
     while item is not TICK:
-        # If is a query
         if isinstance(item, Query):
             # Get the state of cell y, x
             state = grid.query(item.y, item.x)
@@ -122,6 +121,24 @@ def live_a_generation(grid, sim):
             item = sim.send(state)
         # If is a transition
         else:
-            progeny.assign(item.y, item.x, item.state)
+            next_grid.assign(item.y, item.x, item.state)
             item = next(sim)
-    return progeny
+    return next_grid
+
+
+def step_generations(height=10, width=10, n_generations=10):
+    grid = Grid(height, width)
+    sim = simulator(height, width)
+    n_alive = int((height * width) / 5.0)
+    grid.populate(n_alive)
+    print('Starting Grid')
+    print(grid)
+    for gen in range(1, n_generations+1):
+        print('Generation {}'.format(gen))
+        grid = next_generation(grid, sim)
+        print(grid)
+        
+        
+if __name__ == '__main__':
+    step_generations(width=50, n_generations=20)
+        
