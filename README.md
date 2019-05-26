@@ -10,5 +10,3 @@ Adapted from Brett Slatkin's Effective Python (Item 40).
 https://effectivepython.com/
 
 You should read this book!
-
-Short, sweet, makes the brain hurt.
