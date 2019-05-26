@@ -1,6 +1,6 @@
 # Conway's Game of Life
  
-Iplemented using Python coroutines.
+Implemented using Python coroutines.
 
 Adapted from Brett Slatkin's Effective Python (Item 40).
 
