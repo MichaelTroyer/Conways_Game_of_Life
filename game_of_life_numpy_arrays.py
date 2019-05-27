@@ -29,7 +29,17 @@ class Grid(object):
                 self.height * self.width,
                 p=[alive_prop, empty_prop]
                 ).reshape(self.height, self.width)
-        
+    
+    def add_glider(self, i, j):
+        """adds a glider with top left corner at grid[i, j]"""
+        self.grid[i:i+3, j:j+3] = np.array(
+                [
+                 [EMPTY, EMPTY, ALIVE], 
+                 [ALIVE, EMPTY, ALIVE], 
+                 [EMPTY, ALIVE, ALIVE],
+                 ]
+                )
+
     def __getitem__(self, idx):
         return self.grid[idx]
 
@@ -45,7 +55,6 @@ class Grid(object):
             r = ''.join([str(val) for val in row]) + '\n'
             s+= r
         return s
-#        return '\n'.join([str(row) for row in self.grid])
 
     def copy(self):
         new_grid = Grid(self.height, self.width)
@@ -90,9 +99,13 @@ def update(grid):
 
 
 def game_of_life(height, width, starting_proportion=0.2, n_iterations=5, **kwargs):
-    # TODO: kwargs - add predetermined shapes
     grid = Grid(height, width)
-    grid.populate(starting_proportion)
+    if starting_proportion > 0.0:
+        grid.populate(starting_proportion)
+    try:
+        i, j = kwargs.pop('glider')
+        grid.add_glider(i, j)
+    except KeyError: pass
     print('Starting Grid')
     print(grid)
     for iteration in range(1, n_iterations+1):
@@ -102,7 +115,11 @@ def game_of_life(height, width, starting_proportion=0.2, n_iterations=5, **kwarg
     return grid
     
 
-
-
 if __name__ == '__main__':
-    gol = game_of_life(20,20, n_iterations=20)
+    gol = game_of_life(
+            height=10,
+            width=10,
+            starting_proportion=0.1,
+            n_iterations=20,
+            glider=(3, 3),
+    )
