@@ -6,5 +6,4 @@ https://www.python.org/dev/peps/pep-0342/
 Adapted from Effective Python (Item 40) by Brett Slatkin. https://effectivepython.com/  
 
 Implmented using numpy arrays [game_of_life_numpy_arrays.py]  
-https://www.numpy.org/devdocs/reference/arrays.html  
-Adapted from Python Playground (Chapter 3) by Mahesh Venkitachalam. https://nostarch.com/pythonplayground  
+https://www.numpy.org/devdocs/reference/arrays.html    
